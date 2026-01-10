@@ -20,10 +20,10 @@ async function cargarMovimientos(fecha = null) {
     return;
   }
 
-  mostrarMovimientos(data);
+  mostrarMovimientosAgrupados(data);
 }
 
-function mostrarMovimientos(movs) {
+function mostrarMovimientosAgrupados(movs) {
   lista.innerHTML = "";
 
   if (movs.length === 0) {
@@ -31,22 +31,59 @@ function mostrarMovimientos(movs) {
     return;
   }
 
+  // 🔹 Agrupar por fecha
+  const agrupados = {};
+
   movs.forEach(m => {
-    const div = document.createElement("div");
-    div.className = "card";
+    if (!agrupados[m.fecha]) {
+      agrupados[m.fecha] = [];
+    }
+    agrupados[m.fecha].push(m);
+  });
 
-    const signo = m.tipo === "ingreso" ? "+" : "-";
+  // 🔹 Recorrer cada fecha
+  Object.keys(agrupados).forEach(fecha => {
+    const movimientosDia = agrupados[fecha];
 
-    div.innerHTML = `
-      <strong>${m.fecha}</strong><br>
-      ${m.concepto}<br>
-      ${signo} $${m.monto}<br><br>
+    let totalDia = 0;
 
-      <button onclick="editar('${m.id}')">✏️ Modificar</button>
-      <button onclick="eliminar('${m.id}')">🗑️ Eliminar</button>
+    movimientosDia.forEach(m => {
+      totalDia += m.tipo === "ingreso" ? m.monto : -m.monto;
+    });
+
+    // 📦 Card del día
+    const cardDia = document.createElement("div");
+    cardDia.className = "card";
+
+    cardDia.innerHTML = `
+      <h3>📅 ${fecha}</h3>
+      <p id="total"><strong>Total del día:</strong> $${totalDia}</p>
+      <hr>
     `;
 
-    lista.appendChild(div);
+    // 🔹 Movimientos del día
+    movimientosDia.forEach(m => {
+      const div = document.createElement("div");
+      const signo = m.tipo === "ingreso" ? "+" : "-";
+      const color = m.tipo === "ingreso" ? "green" : "red";
+
+      div.innerHTML = `
+        <p>
+          ${m.concepto} -
+          <span style="color:${color}; font-weight:bold">
+            ${signo} $${m.monto}
+          </span>
+        </p>
+
+        <button onclick="editar('${m.id}')">✏️ Modificar</button>
+        <button onclick="eliminar('${m.id}')">🗑️ Eliminar</button>
+        <hr>
+      `;
+
+      cardDia.appendChild(div);
+    });
+
+    lista.appendChild(cardDia);
   });
 }
 
@@ -65,7 +102,7 @@ window.editar = async (id) => {
       monto: Number(monto),
       fecha
     })
-    .eq("id", id); // 👈 UUID STRING
+    .eq("id", id);
 
   if (error) {
     console.error(error);
@@ -83,7 +120,7 @@ window.eliminar = async (id) => {
   const { error } = await supabase
     .from("Movimientos")
     .delete()
-    .eq("id", id); // 👈 UUID STRING
+    .eq("id", id);
 
   if (error) {
     alert("Error al eliminar");
@@ -93,9 +130,11 @@ window.eliminar = async (id) => {
   cargarMovimientos();
 };
 
+// 📆 FILTRO
 window.filtrarPorFecha = () => {
   const fecha = document.getElementById("filtroFecha").value;
-  cargarMovimientos(fecha);
+  cargarMovimientos(fecha || null);
 };
 
+// 🚀 INICIO
 cargarMovimientos();
