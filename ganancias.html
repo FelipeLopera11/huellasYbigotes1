@@ -1,33 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ganancias</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganancias</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>📈 Ganancias</h1>
+    <div class="container">
+        <h1>📈 Ganancias</h1>
 
-    <!-- 📆 SEMANA -->
-    <h2>Ganancia semanal</h2>
-    <input type="date" id="fechaSemana">
-    <div id="resultado"></div>
+        <!-- 📆 SEMANA -->
+        <h2>Ganancia semanal</h2>
+        <input type="date" id="fechaSemana">
+        <div id="resultado"></div>
 
-    <hr>
+        <hr>
 
-    <!-- 📅 MES -->
-    <h2>Ganancia mensual</h2>
-    <input type="month" id="mesSeleccionado">
-    <div id="resultadoMes"></div>
+        <!-- 📅 MES -->
+        <h2>Ganancia mensual</h2>
+        <input type="month" id="mesSeleccionado">
+        <div id="resultadoMes"></div>
 
-    <a href="ingresos.html">
-      <button>⬅ Volver</button>
-    </a>
-  </div>
+        <!-- ✅ BOTÓN CORRECTO -->
+        <button type="button" onclick="descargarExcel()">
+            📥 Descargar Excel
+        </button>
 
-  <script type="module" src="js/ganancias.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <h2>📊 Gráficas</h2>
+        <canvas id="graficaIngresosGastos" height="120"></canvas>
+        <canvas id="graficaGastosConcepto" height="120"></canvas>
+
+        <div id="recomendaciones" class="card"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    </div>
+
+    <script type="module" src="js/ganancias.js"></script>
 </body>
+
 </html>
